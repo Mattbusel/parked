@@ -288,8 +288,8 @@ struct MeterHead: View {
 
     func dial(frac: Double) -> some View {
         Canvas { ctx, size in
-            let c = CGPoint(x: size.width / 2, y: size.height * 0.6)
-            let r = min(size.width * 0.4, size.height * 0.5)
+            let c = CGPoint(x: size.width / 2, y: size.height * 0.68)
+            let r = min(size.width * 0.41, size.height * 0.55)
             let start = 270 - MeterHead.sweep / 2  // zero on the left, symmetric about the top
             func ang(_ f: Double) -> Double { (start + MeterHead.sweep * f) * .pi / 180 }
             func pt(_ f: Double, _ rr: Double) -> CGPoint { CGPoint(x: c.x + cos(ang(f)) * rr, y: c.y + sin(ang(f)) * rr) }
@@ -338,7 +338,7 @@ struct MeterHead: View {
     /// The red EXPIRED flag swings up from behind the dial when time runs out.
     func flag(expired: Bool) -> some View {
         GeometryReader { g in
-            let pivot = CGPoint(x: g.size.width * 0.5, y: g.size.height * 0.6)
+            let pivot = CGPoint(x: g.size.width * 0.5, y: g.size.height * 0.68)
             ZStack {
                 RoundedRectangle(cornerRadius: 6).fill(Color(hex: 0xE8432F))
                     .overlay(Text("EXPIRED").font(.system(size: 26, weight: .heavy).width(.condensed)).tracking(3).foregroundStyle(.white))
