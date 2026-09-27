@@ -290,7 +290,7 @@ struct MeterHead: View {
         Canvas { ctx, size in
             let c = CGPoint(x: size.width / 2, y: size.height * 0.6)
             let r = min(size.width * 0.4, size.height * 0.5)
-            let start = 90 + MeterHead.sweep / 2  // zero on the left
+            let start = 270 - MeterHead.sweep / 2  // zero on the left, symmetric about the top
             func ang(_ f: Double) -> Double { (start + MeterHead.sweep * f) * .pi / 180 }
             func pt(_ f: Double, _ rr: Double) -> CGPoint { CGPoint(x: c.x + cos(ang(f)) * rr, y: c.y + sin(ang(f)) * rr) }
 
