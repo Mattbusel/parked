@@ -245,7 +245,7 @@ struct Stopwatch: View {
 struct MeterHead: View {
     let total: TimeInterval
     let left: TimeInterval
-    static let sweep: Double = 220
+    static let sweep: Double = 200
 
     var body: some View {
         let frac = max(0, min(1, left / total))
@@ -288,8 +288,8 @@ struct MeterHead: View {
 
     func dial(frac: Double) -> some View {
         Canvas { ctx, size in
-            let c = CGPoint(x: size.width / 2, y: size.height * 0.64)
-            let r = min(size.width * 0.42, size.height * 0.58)
+            let c = CGPoint(x: size.width / 2, y: size.height * 0.6)
+            let r = min(size.width * 0.4, size.height * 0.5)
             let start = 90 + MeterHead.sweep / 2  // zero on the left
             func ang(_ f: Double) -> Double { (start + MeterHead.sweep * f) * .pi / 180 }
             func pt(_ f: Double, _ rr: Double) -> CGPoint { CGPoint(x: c.x + cos(ang(f)) * rr, y: c.y + sin(ang(f)) * rr) }
@@ -338,7 +338,7 @@ struct MeterHead: View {
     /// The red EXPIRED flag swings up from behind the dial when time runs out.
     func flag(expired: Bool) -> some View {
         GeometryReader { g in
-            let pivot = CGPoint(x: g.size.width * 0.5, y: g.size.height * 0.64)
+            let pivot = CGPoint(x: g.size.width * 0.5, y: g.size.height * 0.6)
             ZStack {
                 RoundedRectangle(cornerRadius: 6).fill(Color(hex: 0xE8432F))
                     .overlay(Text("EXPIRED").font(.system(size: 26, weight: .heavy).width(.condensed)).tracking(3).foregroundStyle(.white))
@@ -366,10 +366,12 @@ struct MeterHead: View {
 struct DomeShape: Shape {
     func path(in r: CGRect) -> Path {
         var p = Path()
-        let rad = min(r.width / 2, r.height * 0.62)
+        let dome = min(r.width / 2, r.height * 0.6)
+        let k: CGFloat = 0.5523
         p.move(to: CGPoint(x: r.minX, y: r.maxY - 14))
-        p.addLine(to: CGPoint(x: r.minX, y: r.minY + rad))
-        p.addArc(center: CGPoint(x: r.midX, y: r.minY + rad), radius: rad, startAngle: .degrees(180), endAngle: .degrees(0), clockwise: false)
+        p.addLine(to: CGPoint(x: r.minX, y: r.minY + dome))
+        p.addCurve(to: CGPoint(x: r.midX, y: r.minY), control1: CGPoint(x: r.minX, y: r.minY + dome * (1 - k)), control2: CGPoint(x: r.midX - r.width / 2 * k, y: r.minY))
+        p.addCurve(to: CGPoint(x: r.maxX, y: r.minY + dome), control1: CGPoint(x: r.midX + r.width / 2 * k, y: r.minY), control2: CGPoint(x: r.maxX, y: r.minY + dome * (1 - k)))
         p.addLine(to: CGPoint(x: r.maxX, y: r.maxY - 14))
         p.addQuadCurve(to: CGPoint(x: r.maxX - 14, y: r.maxY), control: CGPoint(x: r.maxX, y: r.maxY))
         p.addLine(to: CGPoint(x: r.minX + 14, y: r.maxY))
@@ -412,7 +414,7 @@ struct WhereCards: View {
                     Image(systemName: "mappin.and.ellipse").font(.system(size: 14, weight: .bold)).foregroundStyle(Curb.paint)
                     Text(session.address.isEmpty ? "Pinned on the map" : session.address).font(.sign(18, .bold)).foregroundStyle(Curb.chalk)
                     Spacer()
-                    if let cost = session.cost { Text(Fmt.money(cost)).font(.sign(16, .bold)).foregroundStyle(Curb.dim) }
+                    if let cost = session.cost, cost > 0 { Text(Fmt.money(cost)).font(.sign(16, .bold)).foregroundStyle(Curb.dim) }
                 }
                 if !session.note.isEmpty {
                     Text(session.note).font(.body(14)).foregroundStyle(Curb.dim).fixedSize(horizontal: false, vertical: true)

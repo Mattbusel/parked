@@ -91,7 +91,7 @@ struct Stub: View {
                 HStack(spacing: 6) {
                     if let v { Circle().fill(Curb.cars[v.paint % Curb.cars.count]).frame(width: 8, height: 8); Text(v.name.uppercased()).font(.sign(11.5, .heavy)).tracking(1).foregroundStyle(ink.opacity(0.55)) }
                     Spacer()
-                    if let c = session.cost { Text(Fmt.money(c)).font(.sign(15, .heavy)).foregroundStyle(ink) }
+                    if let c = session.cost, c > 0 { Text(Fmt.money(c)).font(.sign(15, .heavy)).foregroundStyle(ink) }
                 }
                 Text(session.place).font(.sign(19, .bold)).foregroundStyle(ink).lineLimit(2).multilineTextAlignment(.leading)
                 HStack(spacing: 6) {

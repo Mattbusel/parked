@@ -137,15 +137,26 @@ struct RuleSign: View {
     let now: Date
     var body: some View {
         HStack(spacing: 14) {
-            ZStack {
-                Circle().fill(Curb.sign)
-                Text("P").font(.system(size: 30, weight: .heavy)).foregroundStyle(Curb.ink)
-                Circle().strokeBorder(Curb.flag, lineWidth: 5)
-                Rectangle().fill(Curb.flag).frame(width: 5, height: 50).rotationEffect(.degrees(-45))
+            if rule.allowsParking {
+                ZStack(alignment: .bottomTrailing) {
+                    PSign(size: 50)
+                    if let h = rule.limitHours {
+                        Text("\(h)H").font(.sign(12, .heavy)).foregroundStyle(.white).padding(.horizontal, 4).padding(.vertical, 1)
+                            .background(RoundedRectangle(cornerRadius: 4).fill(Curb.flag)).offset(x: 6, y: 4)
+                    }
+                }
+                .frame(width: 54, height: 54)
+            } else {
+                ZStack {
+                    Circle().fill(Curb.sign)
+                    Text("P").font(.system(size: 30, weight: .heavy)).foregroundStyle(Curb.ink)
+                    Circle().strokeBorder(Curb.flag, lineWidth: 5)
+                    Rectangle().fill(Curb.flag).frame(width: 5, height: 50).rotationEffect(.degrees(-45))
+                }
+                .frame(width: 54, height: 54).clipShape(Circle())
             }
-            .frame(width: 54, height: 54).clipShape(Circle())
             VStack(alignment: .leading, spacing: 2) {
-                Text(rule.name.uppercased()).font(.sign(14, .heavy)).tracking(1).foregroundStyle(Curb.flag)
+                Text(rule.name.uppercased()).font(.sign(14, .heavy)).tracking(1).foregroundStyle(rule.allowsParking ? Curb.blue : Curb.flag)
                 Text("\(rule.dayText) \(rule.timeText)").font(.sign(21)).foregroundStyle(Curb.ink)
                 if !rule.place.isEmpty { Text(rule.place).font(.body(12.5, .semibold)).foregroundStyle(Curb.ink.opacity(0.6)) }
             }
@@ -193,7 +204,7 @@ struct GarageRow: View {
                     .frame(width: 48, height: 48)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(garage.name).font(.sign(18, .bold)).foregroundStyle(Curb.chalk)
-                        Text([garage.address.isEmpty ? nil : garage.address, garage.minutes > 0 ? Fmt.span(TimeInterval(garage.minutes * 60)) : "No meter", garage.rate.map { Fmt.money($0) + "/h" }].compactMap { $0 }.joined(separator: " · "))
+                        Text([garage.address.isEmpty ? nil : garage.address, garage.minutes > 0 ? Fmt.span(TimeInterval(garage.minutes * 60)) : "No meter", garage.rate.flatMap { $0 > 0 ? Fmt.money($0) + "/h" : nil }].compactMap { $0 }.joined(separator: " · "))
                             .font(.body(12.5)).foregroundStyle(Curb.dim).lineLimit(1)
                     }
                     Spacer(minLength: 0)

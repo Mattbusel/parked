@@ -73,6 +73,10 @@ struct Rule: Codable, Identifiable, Hashable {
     var eveningBefore: Bool = true
     var on: Bool = true
 
+    /// A time limit or permit zone, rather than a ban.
+    var allowsParking: Bool { let n = name.lowercased(); return n.contains("hour") || n.contains("zone") || n.contains("permit") }
+    var limitHours: Int? { name.first(where: \.isNumber).flatMap { Int(String($0)) } }
+
     var dayText: String {
         let names = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
         let d = days.sorted()
