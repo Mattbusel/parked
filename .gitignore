@@ -1,0 +1,7 @@
+*.xcodeproj
+dd/
+shots/
+build/
+capture/
+.DS_Store
+__pycache__/
